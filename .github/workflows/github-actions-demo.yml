@@ -11,4 +11,8 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
-      - run: java -version
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v4.2
+        with:
+          maven-version: 3.8.4
+      - run: mvn -version
