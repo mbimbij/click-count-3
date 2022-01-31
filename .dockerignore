@@ -1,2 +1,3 @@
-Dockerfile
+Dockerfile*
 .git
+docker-compose.yml

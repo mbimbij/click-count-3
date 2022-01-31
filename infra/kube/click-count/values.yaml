@@ -1,0 +1,8 @@
+replicaCount: 1
+
+application:
+  redisHost: redis-master.redis
+
+image:
+  name: ghcr.io/mbimbij/click-count
+  tag: "sha-ccb4c3f"

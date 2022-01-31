@@ -2,6 +2,7 @@ package fr.xebia.clickcount;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Singleton;
 
@@ -50,6 +51,11 @@ public class Configuration {
 
     @ToString.Include(name = "redisPassword")
     public String maskedPassword() {
+        if (StringUtils.isBlank(redisPassword)) {
+            return "XXXXXX";
+        } else if (redisPassword.length() < 3) {
+            return redisPassword.charAt(0) + "XXXXXX";
+        }
         return redisPassword.substring(0, 3) + "XXXXXX";
     }
 }
