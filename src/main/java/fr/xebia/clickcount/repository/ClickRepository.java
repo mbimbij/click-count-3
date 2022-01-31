@@ -30,7 +30,7 @@ public class ClickRepository {
         config.useSingleServer().setAddress(String.format("%s:%d", configuration.redisHost, configuration.redisPort));
 
         redisson = Redisson.create(config);
-        redisClient = new RedisClient(new NioEventLoopGroup(), NioSocketChannel.class, configuration.redisHost, configuration.redisPort, configuration.redisConnectionTimeout);
+        redisClient = new RedisClient(new NioEventLoopGroup(), NioSocketChannel.class, configuration.redisHost, configuration.redisPort, configuration.redisConnectionTimeoutMillis);
     }
 
     public String ping() {
