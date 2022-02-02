@@ -5,4 +5,4 @@ application:
 
 image:
   name: ghcr.io/mbimbij/click-count
-  tag: "sha-ccb4c3f"
+  tag: latest
