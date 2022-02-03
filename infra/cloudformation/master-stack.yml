@@ -1,0 +1,68 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  AWS CloudFormation Sample Template ElasticBeanstalk_Simple: Configure and
+  launch an AWS Elastic Beanstalk application that connects to an Amazon RDS
+  database instance. Monitoring is setup on the database. **WARNING** This
+  template creates one or more Amazon EC2 instances and an Amazon Relational
+  Database Service database instance. You will be billed for the AWS resources
+  used if you create a stack from this template.
+Parameters:
+  ApplicationName:
+    Type: String
+    Description: Application Name
+  VPCCIDR:
+    Type: String
+    Description: CIDR block used to create the VPC (e.g. 10.0.0.0/24)
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{2})"
+    ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x. (e.g. 10.0.0.0/24)
+  PublicSubnet1CIDR:
+    Type: String
+    Description: CIDR block should used to create the public subnet in AZ1 (e.g. 10.0.0.0/26)
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{2})"
+    ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x. (e.g. 10.0.0.0/26)
+  PublicSubnet2CIDR:
+    Type: String
+    Description: CIDR block should used to create the public subnet in AZ2 (e.g. 10.0.0.64/26)
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{2})"
+    ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x. (e.g. 10.0.0.64/26)
+  PublicSubnet3CIDR:
+    Type: String
+    Description: CIDR block should used to create the public subnet in AZ3 (e.g. 10.0.0.64/26)
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{2})"
+    ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x. (e.g. 10.0.0.64/26)
+  PrivateSubnet1CIDR:
+    Type: String
+    Description: CIDR block should used to create the private subnet in AZ1 (e.g. 10.0.0.128/26)
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{2})"
+    ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x. (e.g. 10.0.0.128/26)
+  PrivateSubnet2CIDR:
+    Type: String
+    Description: CIDR block should used to create the private subnet in AZ2 (e.g. 10.0.0.192/26)
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{2})"
+    ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x. (e.g. 10.0.0.192/26)
+  PrivateSubnet3CIDR:
+    Type: String
+    Description: CIDR block should used to create the private subnet in AZ3 (e.g. 10.0.0.192/26)
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{2})"
+    ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x. (e.g. 10.0.0.192/26)
+  SshKeyName:
+    Type: String
+    Description: SSH Key Pair Name
+Resources:
+  Network:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      TemplateURL: 'network/network.yml'
+      Parameters:
+        VPCCIDR: !Ref VPCCIDR
+        PublicSubnet1CIDR: !Ref PublicSubnet1CIDR
+        PublicSubnet2CIDR: !Ref PublicSubnet2CIDR
+        PublicSubnet3CIDR: !Ref PublicSubnet3CIDR
+        PrivateSubnet1CIDR: !Ref PrivateSubnet1CIDR
+        PrivateSubnet2CIDR: !Ref PrivateSubnet2CIDR
+        PrivateSubnet3CIDR: !Ref PrivateSubnet3CIDR
+        ApplicationName: !Ref ApplicationName
+        Environment: 'prod'
+      Tags:
+        - Key: Name
+          Value: !Sub '${ApplicationName}::Network'
