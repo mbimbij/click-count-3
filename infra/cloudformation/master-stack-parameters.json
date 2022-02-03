@@ -34,5 +34,17 @@
   {
     "ParameterKey": "PrivateSubnet3CIDR",
     "ParameterValue": "10.1.12.0/24"
+  },
+  {
+    "ParameterKey": "MinSizeStaging",
+    "ParameterValue": "1"
+  },
+  {
+    "ParameterKey": "DesiredSizeStaging",
+    "ParameterValue": "2"
+  },
+  {
+    "ParameterKey": "MaxSizeStaging",
+    "ParameterValue": "2"
   }
 ]

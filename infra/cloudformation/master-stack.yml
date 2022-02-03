@@ -10,6 +10,7 @@ Parameters:
   ApplicationName:
     Type: String
     Description: Application Name
+  # Network Parameters
   VPCCIDR:
     Type: String
     Description: CIDR block used to create the VPC (e.g. 10.0.0.0/24)
@@ -45,11 +46,18 @@ Parameters:
     Description: CIDR block should used to create the private subnet in AZ3 (e.g. 10.0.0.192/26)
     AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{2})"
     ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x. (e.g. 10.0.0.192/26)
-  SshKeyName:
-    Type: String
-    Description: SSH Key Pair Name
+  # Kubernetes staging cluster parameters
+  MinSizeStaging:
+    Type: Number
+    Description: "minimum number of nodes in the staging cluster"
+  DesiredSizeStaging:
+    Type: Number
+    Description: "the number of nodes the staging cluster is started with"
+  MaxSizeStaging:
+    Type: Number
+    Description: "maximum number of nodes in the staging cluster"
 Resources:
-  Network:
+  NetworkStaging:
     Type: "AWS::CloudFormation::Stack"
     Properties:
       TemplateURL: 'network/network.yml'
@@ -62,7 +70,28 @@ Resources:
         PrivateSubnet2CIDR: !Ref PrivateSubnet2CIDR
         PrivateSubnet3CIDR: !Ref PrivateSubnet3CIDR
         ApplicationName: !Ref ApplicationName
-        Environment: 'prod'
+        Environment: 'staging'
       Tags:
         - Key: Name
-          Value: !Sub '${ApplicationName}::Network'
+          Value: !Sub '${ApplicationName}::NetworkStaging'
+        - Key: Environment
+          Value: !Sub 'staging'
+  EksClusterStaging:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      TemplateURL: 'eks-cluster/eks-cluster.yml'
+      Parameters:
+        ApplicationName: !Ref ApplicationName
+        VpcId: !GetAtt NetworkStaging.Outputs.VPC
+        KubernetesVersion: '1.21'
+        SubnetIds: !GetAtt NetworkStaging.Outputs.Subnets
+        PublicSubnetIds: !GetAtt NetworkStaging.Outputs.PublicSubnets
+        Environment: 'staging'
+        MinSize: !Ref MinSizeStaging
+        DesiredSize: !Ref DesiredSizeStaging
+        MaxSize: !Ref MaxSizeStaging
+      Tags:
+        - Key: Name
+          Value: !Sub '${ApplicationName}::EksClusterStaging'
+        - Key: Environment
+          Value: !Sub 'staging'
