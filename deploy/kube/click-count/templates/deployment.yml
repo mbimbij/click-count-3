@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: click-count
+  name: click-count
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: click-count
+  template:
+    metadata:
+      labels:
+        app: click-count
+    spec:
+      containers:
+        - image: {{ .Values.imageName }}
+          name: click-count
+          env:
+            - name: REDIS_HOST
+              value: {{ .Values.application.redisHost }}

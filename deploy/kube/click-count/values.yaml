@@ -3,6 +3,4 @@ replicaCount: 1
 application:
   redisHost: redis-master.redis
 
-image:
-  name: ghcr.io/mbimbij/click-count
-  tag: latest
+imageName: ghcr.io/mbimbij/click-count:latest

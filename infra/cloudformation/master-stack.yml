@@ -87,6 +87,7 @@ Resources:
         SubnetIds: !GetAtt NetworkStaging.Outputs.Subnets
         PublicSubnetIds: !GetAtt NetworkStaging.Outputs.PublicSubnets
         Environment: 'staging'
+        InstanceType: t3.small
         MinSize: !Ref MinSizeStaging
         DesiredSize: !Ref DesiredSizeStaging
         MaxSize: !Ref MaxSizeStaging

@@ -1,11 +1,16 @@
 name: GitHub Actions Demo
 on: [push]
 env:
+  APPLICATION_NAME: click-count
+  AWS_ACCOUNT_ID: 642009745804
+  AWS_REGION: eu-west-3
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 jobs:
-  Explore-GitHub-Actions:
+  build:
     runs-on: ubuntu-latest
+    outputs:
+      imageName: ${{ steps.meta.outputs.tags }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
@@ -47,3 +52,27 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  deployStaging:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@master
+        with:
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github-oidc-role
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: deploy with Helm
+        run: |
+          aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_REGION
+          curl -sSL https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+          helm version --short
+          helm upgrade -i click-count -n click-count --create-namespace deploy/kube/click-count/ --set imageName=$IMAGE_FULLNAME
+        env:
+          IMAGE_FULLNAME: ${{ needs.build.outputs.imageName }}
+          CLUSTER_NAME: cluster-${{ env.APPLICATION_NAME }}-staging

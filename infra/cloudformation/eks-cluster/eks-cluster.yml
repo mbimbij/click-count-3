@@ -18,15 +18,22 @@ Parameters:
   Environment:
     Type: String
     Description: "Environment: staging, production, etc."
+  InstanceType:
+    Default: t3.small
+    Type: String
+    Description: Instance Type
   MinSize:
     Type: Number
     Description: "minimum number of nodes in the cluster"
+    Default: 1
   DesiredSize:
     Type: Number
     Description: "the number of nodes the cluster is started with"
+    Default: 2
   MaxSize:
     Type: Number
     Description: "maximum number of nodes in the cluster"
+    Default: 3
 
 Mappings:
   ServicePrincipalPartitionMap:
@@ -109,7 +116,7 @@ Resources:
   ControlPlane:
     Type: 'AWS::EKS::Cluster'
     Properties:
-      Name: !Sub 'cluster-${Environment}'
+      Name: !Sub 'cluster-${ApplicationName}-${Environment}'
       Version: !Ref KubernetesVersion
       RoleArn: !GetAtt ControlPlaneRole.Arn
       ResourcesVpcConfig:
@@ -181,11 +188,11 @@ Resources:
       ClusterName: !Ref ControlPlane
       NodeRole: !GetAtt EKSNodegroupRole.Arn
       ScalingConfig:
-        MinSize: 2
-        DesiredSize: 3
-        MaxSize: 5
+        MinSize: !Ref MinSize
+        DesiredSize: !Ref DesiredSize
+        MaxSize: !Ref MaxSize
       Labels:
         Environment: !Ref Environment
       Subnets: !Ref PublicSubnetIds
       InstanceTypes:
-        - t3.small
+        - !Ref InstanceType

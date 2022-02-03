@@ -1,23 +1,16 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: Service
 metadata:
-  creationTimestamp: null
   labels:
     app: click-count
+    app.kubernetes.io/managed-by: Helm
   name: click-count
+  namespace: click-count
 spec:
-  replicas: {{ .Values.replicaCount }}
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 8080
   selector:
-    matchLabels:
-      app: click-count
-  template:
-    metadata:
-      labels:
-        app: click-count
-    spec:
-      containers:
-        - image: {{ .Values.image.name }}:{{ .Values.image.tag }}
-          name: click-count
-          env:
-            - name: REDIS_HOST
-              value: {{ .Values.application.redisHost }}
+    app: click-count
+  type: LoadBalancer
