@@ -76,3 +76,16 @@ jobs:
         env:
           IMAGE_FULLNAME: ${{ needs.build.outputs.imageName }}
           CLUSTER_NAME: cluster-${{ env.APPLICATION_NAME }}-staging
+
+  deployProduction:
+    needs:
+      - build
+      - deployStaging
+    environment: 'production'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: hello
+        run: echo hello
