@@ -56,6 +56,12 @@
     "ParameterValue": "2"
   },
   {
+    "ParameterKey": "NumCacheNodesStaging",
+    "ParameterValue": "1"
+  },
+
+
+  {
     "ParameterKey": "VPCCIDRProduction",
     "ParameterValue": "10.2.0.0/16"
   },

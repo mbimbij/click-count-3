@@ -47,13 +47,13 @@ Mappings:
       EC2: ec2.amazonaws.com
       EKS: eks.amazonaws.com
 Resources:
-  ClusterSharedNodeSecurityGroup:
+  SharedNodeSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
       GroupDescription: Communication between all nodes in the cluster
       Tags:
         - Key: Name
-          Value: !Sub '${ApplicationName}/ClusterSharedNodeSecurityGroup'
+          Value: !Sub '${ApplicationName}/SharedNodeSecurityGroup'
       VpcId: !Ref VpcId
   ControlPlaneSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
@@ -70,7 +70,7 @@ Resources:
         Allow managed and unmanaged nodes to communicate with each other (all
         ports)
       FromPort: 0
-      GroupId: !Ref ClusterSharedNodeSecurityGroup
+      GroupId: !Ref SharedNodeSecurityGroup
       IpProtocol: '-1'
       SourceSecurityGroupId: !GetAtt ControlPlane.ClusterSecurityGroupId
       ToPort: 65535
@@ -79,9 +79,9 @@ Resources:
     Properties:
       Description: Allow nodes to communicate with each other (all ports)
       FromPort: 0
-      GroupId: !Ref ClusterSharedNodeSecurityGroup
+      GroupId: !Ref SharedNodeSecurityGroup
       IpProtocol: '-1'
-      SourceSecurityGroupId: !Ref ClusterSharedNodeSecurityGroup
+      SourceSecurityGroupId: !Ref SharedNodeSecurityGroup
       ToPort: 65535
   IngressNodeToDefaultClusterSG:
     Type: 'AWS::EC2::SecurityGroupIngress'
@@ -90,7 +90,7 @@ Resources:
       FromPort: 0
       GroupId: !GetAtt ControlPlane.ClusterSecurityGroupId
       IpProtocol: '-1'
-      SourceSecurityGroupId: !Ref ClusterSharedNodeSecurityGroup
+      SourceSecurityGroupId: !Ref SharedNodeSecurityGroup
       ToPort: 65535
   ControlPlaneRole:
     Type: 'AWS::IAM::Role'
@@ -196,3 +196,6 @@ Resources:
       Subnets: !Ref PublicSubnetIds
       InstanceTypes:
         - !Ref InstanceType
+Outputs:
+  ClusterSecurityGroupId:
+    Value: !GetAtt ControlPlane.ClusterSecurityGroupId

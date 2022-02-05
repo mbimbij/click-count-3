@@ -65,6 +65,9 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github-oidc-role
           aws-region: ${{ env.AWS_REGION }}
+      - name: Get Elasticache-Redis host
+        id: get_redis_host
+        run: echo ::set-output name=redis_host::"$(aws ssm get-parameter --name '/click-count/staging/redis/address' --query 'Parameter.Value' --output text)"
       - name: Check out repository code
         uses: actions/checkout@v2
       - name: deploy with Helm
@@ -72,10 +75,11 @@ jobs:
           aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_REGION
           curl -sSL https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
           helm version --short
-          helm upgrade -i click-count -n click-count --create-namespace deploy/kube/click-count/ --set imageName=$IMAGE_FULLNAME
+          helm upgrade -i click-count -n click-count --create-namespace deploy/kube/click-count/ --set imageName=$IMAGE_FULLNAME --set application.redisHost=$REDIS_HOST
         env:
           IMAGE_FULLNAME: ${{ needs.build.outputs.imageName }}
           CLUSTER_NAME: cluster-${{ env.APPLICATION_NAME }}-staging
+          REDIS_HOST: ${{ steps.get_redis_host.outputs.redis_host }}
 
   deployProduction:
     needs:
@@ -92,6 +96,9 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github-oidc-role
           aws-region: ${{ env.AWS_REGION }}
+      - name: Get Elasticache-Redis host
+        id: get_redis_host
+        run: echo ::set-output name=redis_host::"$(aws ssm get-parameter --name '/click-count/production/redis/address' --query 'Parameter.Value' --output text)"
       - name: Check out repository code
         uses: actions/checkout@v2
       - name: deploy with Helm
@@ -99,7 +106,8 @@ jobs:
           aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_REGION
           curl -sSL https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
           helm version --short
-          helm upgrade -i click-count -n click-count --create-namespace deploy/kube/click-count/ --set imageName=$IMAGE_FULLNAME
+          helm upgrade -i click-count -n click-count --create-namespace deploy/kube/click-count/ --set imageName=$IMAGE_FULLNAME --set application.redisHost=$REDIS_HOST
         env:
           IMAGE_FULLNAME: ${{ needs.build.outputs.imageName }}
           CLUSTER_NAME: cluster-${{ env.APPLICATION_NAME }}-production
+          REDIS_HOST: ${{ steps.get_redis_host.outputs.redis_host }}
