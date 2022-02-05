@@ -17,6 +17,7 @@ Parameters:
   Environment:
     Type: String
     Description: Environment
+
   # Network Parameters
   VPCCIDR:
     Type: String
@@ -53,6 +54,7 @@ Parameters:
     Description: CIDR block should used to create the private subnet in AZ3 (e.g. 10.0.0.192/26)
     AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{2})"
     ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x. (e.g. 10.0.0.192/26)
+
   # Kubernetes staging cluster parameters
   MinSize:
     Type: Number
@@ -63,6 +65,13 @@ Parameters:
   MaxSize:
     Type: Number
     Description: "maximum number of nodes in the cluster"
+
+  # Redis parameters
+  NumCacheNodes:
+    Default: 1
+    Type: Number
+    Description: Num Cache Nodes
+
 Resources:
   Network:
     Type: "AWS::CloudFormation::Stack"
@@ -83,6 +92,7 @@ Resources:
           Value: !Sub '${ApplicationName}/${Environment}/Network'
         - Key: Environment
           Value: !Ref Environment
+
   EksCluster:
     Type: "AWS::CloudFormation::Stack"
     Properties:
@@ -103,3 +113,18 @@ Resources:
           Value: !Sub '${ApplicationName}/${Environment}/EksCluster'
         - Key: Environment
           Value: !Ref Environment
+
+  Redis:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      TemplateURL: 'redis-elasticache/redis-elasticache.yml'
+      Parameters:
+        ApplicationName: !Ref ApplicationName
+        Environment: !Ref Environment
+        VpcId: !GetAtt Network.Outputs.VPC
+        SubnetIds: !GetAtt Network.Outputs.PrivateSubnets
+        ApplicationSecurityGroupId: !GetAtt EksCluster.Outputs.ClusterSecurityGroupId
+        NumCacheNodes: !Ref NumCacheNodes
+      Tags:
+        - Key: Name
+          Value: !Sub '${ApplicationName}/${Environment}/Redis'

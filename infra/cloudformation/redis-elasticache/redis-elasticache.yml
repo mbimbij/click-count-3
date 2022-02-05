@@ -1,0 +1,79 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: S3 Bucket used for CloudFormation nested stack and pipeline resources
+Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: Vpc Id
+  SubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: Subnet Ids
+  ApplicationSecurityGroupId:
+    Type: AWS::EC2::SecurityGroup::Id
+    Description: Application Security Group
+  CacheNodeType:
+    Default: cache.t2.micro
+    Type: String
+    Description: Cache Node Type
+  NumCacheNodes:
+    Type: Number
+    Description: Num Cache Nodes
+  RedisPort:
+    Default: 6379
+    Type: Number
+    Description: Num Cache Nodes
+  ApplicationName:
+    Type: String
+    Description: Application Name
+  Environment:
+    Type: String
+    Description: "Environment: staging, production, etc."
+Resources:
+  ElasticacheSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Elasticache Security Group
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: !Ref RedisPort
+          ToPort: !Ref RedisPort
+          SourceSecurityGroupId: !Ref ApplicationSecurityGroupId
+      Tags:
+        - Key: Name
+          Value: !Sub '${ApplicationName}-${Environment}-redis'
+  ElasticacheSubnetGroup:
+    Type: 'AWS::ElastiCache::SubnetGroup'
+    Properties:
+      Description: Cache Subnet Group
+      SubnetIds: !Ref SubnetIds
+  ElasticacheCluster:
+    Type: 'AWS::ElastiCache::CacheCluster'
+    Properties:
+      Engine: redis
+      ClusterName: !Sub '${ApplicationName}-${Environment}-redis'
+      CacheNodeType: !Ref CacheNodeType
+      NumCacheNodes: !Ref NumCacheNodes
+      VpcSecurityGroupIds:
+        - !GetAtt [ ElasticacheSecurityGroup, GroupId ]
+      CacheSubnetGroupName: !Ref ElasticacheSubnetGroup
+      Tags:
+        - Key: Name
+          Value: !Sub '${ApplicationName}-${Environment}-redis'
+        - Key: Application
+          Value: !Sub '${ApplicationName}'
+        - Key: Environment
+          Value: !Sub '${Environment}'
+  ElasticacheAddress:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub '/${ApplicationName}/${Environment}/redis/address'
+      Type: String
+      Value: !GetAtt [ElasticacheCluster, RedisEndpoint.Address]
+      Description: Elasticache Address
+  ElasticachePort:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub '/${ApplicationName}/${Environment}/redis/port'
+      Type: String
+      Value: !GetAtt [ ElasticacheCluster, RedisEndpoint.Port ]
+      Description: Elasticache Port
