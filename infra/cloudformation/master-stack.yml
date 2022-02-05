@@ -10,89 +10,149 @@ Parameters:
   ApplicationName:
     Type: String
     Description: Application Name
-  # Network Parameters
-  VPCCIDR:
+  KubernetesVersion:
+    Type: String
+    Description: Kubernetes Version
+    Default: '1.21'
+  # Staging Parameters
+  ## Network Parameters
+  VPCCIDRStaging:
     Type: String
     Description: CIDR block used to create the VPC (e.g. 10.0.0.0/24)
     AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{2})"
     ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x. (e.g. 10.0.0.0/24)
-  PublicSubnet1CIDR:
+  PublicSubnet1CIDRStaging:
     Type: String
     Description: CIDR block should used to create the public subnet in AZ1 (e.g. 10.0.0.0/26)
     AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{2})"
     ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x. (e.g. 10.0.0.0/26)
-  PublicSubnet2CIDR:
+  PublicSubnet2CIDRStaging:
     Type: String
     Description: CIDR block should used to create the public subnet in AZ2 (e.g. 10.0.0.64/26)
     AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{2})"
     ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x. (e.g. 10.0.0.64/26)
-  PublicSubnet3CIDR:
+  PublicSubnet3CIDRStaging:
     Type: String
     Description: CIDR block should used to create the public subnet in AZ3 (e.g. 10.0.0.64/26)
     AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{2})"
     ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x. (e.g. 10.0.0.64/26)
-  PrivateSubnet1CIDR:
+  PrivateSubnet1CIDRStaging:
     Type: String
     Description: CIDR block should used to create the private subnet in AZ1 (e.g. 10.0.0.128/26)
     AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{2})"
     ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x. (e.g. 10.0.0.128/26)
-  PrivateSubnet2CIDR:
+  PrivateSubnet2CIDRStaging:
     Type: String
     Description: CIDR block should used to create the private subnet in AZ2 (e.g. 10.0.0.192/26)
     AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{2})"
     ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x. (e.g. 10.0.0.192/26)
-  PrivateSubnet3CIDR:
+  PrivateSubnet3CIDRStaging:
     Type: String
     Description: CIDR block should used to create the private subnet in AZ3 (e.g. 10.0.0.192/26)
     AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{2})"
     ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x. (e.g. 10.0.0.192/26)
-  # Kubernetes staging cluster parameters
+  ## Kubernetes Parameters
   MinSizeStaging:
     Type: Number
-    Description: "minimum number of nodes in the staging cluster"
+    Description: "minimum number of nodes in the cluster"
   DesiredSizeStaging:
     Type: Number
-    Description: "the number of nodes the staging cluster is started with"
+    Description: "the number of nodes the cluster is started with"
   MaxSizeStaging:
     Type: Number
-    Description: "maximum number of nodes in the staging cluster"
+    Description: "maximum number of nodes in the cluster"
+
+  # Production Parameters
+  ## Network Parameters
+  VPCCIDRProduction:
+    Type: String
+    Description: CIDR block used to create the VPC (e.g. 10.0.0.0/24)
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{2})"
+    ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x. (e.g. 10.0.0.0/24)
+  PublicSubnet1CIDRProduction:
+    Type: String
+    Description: CIDR block should used to create the public subnet in AZ1 (e.g. 10.0.0.0/26)
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{2})"
+    ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x. (e.g. 10.0.0.0/26)
+  PublicSubnet2CIDRProduction:
+    Type: String
+    Description: CIDR block should used to create the public subnet in AZ2 (e.g. 10.0.0.64/26)
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{2})"
+    ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x. (e.g. 10.0.0.64/26)
+  PublicSubnet3CIDRProduction:
+    Type: String
+    Description: CIDR block should used to create the public subnet in AZ3 (e.g. 10.0.0.64/26)
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{2})"
+    ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x. (e.g. 10.0.0.64/26)
+  PrivateSubnet1CIDRProduction:
+    Type: String
+    Description: CIDR block should used to create the private subnet in AZ1 (e.g. 10.0.0.128/26)
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{2})"
+    ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x. (e.g. 10.0.0.128/26)
+  PrivateSubnet2CIDRProduction:
+    Type: String
+    Description: CIDR block should used to create the private subnet in AZ2 (e.g. 10.0.0.192/26)
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{2})"
+    ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x. (e.g. 10.0.0.192/26)
+  PrivateSubnet3CIDRProduction:
+    Type: String
+    Description: CIDR block should used to create the private subnet in AZ3 (e.g. 10.0.0.192/26)
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{2})"
+    ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x. (e.g. 10.0.0.192/26)
+  ## Kubernetes Parameters
+  MinSizeProduction:
+    Type: Number
+    Description: "minimum number of nodes in the cluster"
+  DesiredSizeProduction:
+    Type: Number
+    Description: "the number of nodes the cluster is started with"
+  MaxSizeProduction:
+    Type: Number
+    Description: "maximum number of nodes in the cluster"
+
 Resources:
-  NetworkStaging:
+  StagingEnvironment:
     Type: "AWS::CloudFormation::Stack"
     Properties:
-      TemplateURL: 'network/network.yml'
-      Parameters:
-        VPCCIDR: !Ref VPCCIDR
-        PublicSubnet1CIDR: !Ref PublicSubnet1CIDR
-        PublicSubnet2CIDR: !Ref PublicSubnet2CIDR
-        PublicSubnet3CIDR: !Ref PublicSubnet3CIDR
-        PrivateSubnet1CIDR: !Ref PrivateSubnet1CIDR
-        PrivateSubnet2CIDR: !Ref PrivateSubnet2CIDR
-        PrivateSubnet3CIDR: !Ref PrivateSubnet3CIDR
-        ApplicationName: !Ref ApplicationName
-        Environment: 'staging'
-      Tags:
-        - Key: Name
-          Value: !Sub '${ApplicationName}::NetworkStaging'
-        - Key: Environment
-          Value: !Sub 'staging'
-  EksClusterStaging:
-    Type: "AWS::CloudFormation::Stack"
-    Properties:
-      TemplateURL: 'eks-cluster/eks-cluster.yml'
+      TemplateURL: 'environment.yml'
       Parameters:
         ApplicationName: !Ref ApplicationName
-        VpcId: !GetAtt NetworkStaging.Outputs.VPC
-        KubernetesVersion: '1.21'
-        SubnetIds: !GetAtt NetworkStaging.Outputs.Subnets
-        PublicSubnetIds: !GetAtt NetworkStaging.Outputs.PublicSubnets
         Environment: 'staging'
-        InstanceType: t3.small
+        VPCCIDR: !Ref VPCCIDRStaging
+        PublicSubnet1CIDR: !Ref PublicSubnet1CIDRStaging
+        PublicSubnet2CIDR: !Ref PublicSubnet2CIDRStaging
+        PublicSubnet3CIDR: !Ref PublicSubnet3CIDRStaging
+        PrivateSubnet1CIDR: !Ref PrivateSubnet1CIDRStaging
+        PrivateSubnet2CIDR: !Ref PrivateSubnet2CIDRStaging
+        PrivateSubnet3CIDR: !Ref PrivateSubnet3CIDRStaging
         MinSize: !Ref MinSizeStaging
-        DesiredSize: !Ref DesiredSizeStaging
+        DesiredSize:  !Ref DesiredSizeStaging
         MaxSize: !Ref MaxSizeStaging
       Tags:
         - Key: Name
-          Value: !Sub '${ApplicationName}::EksClusterStaging'
+          Value: !Sub '${ApplicationName}/staging/Network'
         - Key: Environment
-          Value: !Sub 'staging'
+          Value: 'staging'
+
+  ProductionEnvironment:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      TemplateURL: 'environment.yml'
+      Parameters:
+        ApplicationName: !Ref ApplicationName
+        Environment: 'production'
+        VPCCIDR: !Ref VPCCIDRProduction
+        PublicSubnet1CIDR: !Ref PublicSubnet1CIDRProduction
+        PublicSubnet2CIDR: !Ref PublicSubnet2CIDRProduction
+        PublicSubnet3CIDR: !Ref PublicSubnet3CIDRProduction
+        PrivateSubnet1CIDR: !Ref PrivateSubnet1CIDRProduction
+        PrivateSubnet2CIDR: !Ref PrivateSubnet2CIDRProduction
+        PrivateSubnet3CIDR: !Ref PrivateSubnet3CIDRProduction
+        MinSize: !Ref MinSizeProduction
+        DesiredSize:  !Ref DesiredSizeProduction
+        MaxSize: !Ref MaxSizeProduction
+      Tags:
+        - Key: Name
+          Value: !Sub '${ApplicationName}/production/Network'
+        - Key: Environment
+          Value: 'production'

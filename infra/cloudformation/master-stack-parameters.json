@@ -4,36 +4,44 @@
     "ParameterValue": "${APPLICATION_NAME}"
   },
   {
-    "ParameterKey": "VPCCIDR",
+    "ParameterKey": "KubernetesVersion",
+    "ParameterValue": "1.21"
+  },
+  {
+    "ParameterKey": "VPCCIDRStaging",
     "ParameterValue": "10.1.0.0/16"
   },
   {
-    "ParameterKey": "PublicSubnet1CIDR",
+    "ParameterKey": "PublicSubnet1CIDRStaging",
     "ParameterValue": "10.1.0.0/24"
   },
   {
-    "ParameterKey": "PublicSubnet2CIDR",
+    "ParameterKey": "PublicSubnet2CIDRStaging",
     "ParameterValue": "10.1.1.0/24"
   },
   {
-    "ParameterKey": "PublicSubnet3CIDR",
+    "ParameterKey": "PublicSubnet3CIDRStaging",
     "ParameterValue": "10.1.2.0/24"
   },
   {
-    "ParameterKey": "PrivateSubnet1CIDR",
+    "ParameterKey": "PrivateSubnet1CIDRStaging",
     "ParameterValue": "10.1.10.0/24"
   },
   {
-    "ParameterKey": "PrivateSubnet2CIDR",
+    "ParameterKey": "PrivateSubnet2CIDRStaging",
     "ParameterValue": "10.1.11.0/24"
   },
   {
-    "ParameterKey": "PrivateSubnet2CIDR",
+    "ParameterKey": "PrivateSubnet2CIDRStaging",
     "ParameterValue": "10.1.11.0/24"
   },
   {
-    "ParameterKey": "PrivateSubnet3CIDR",
+    "ParameterKey": "PrivateSubnet3CIDRStaging",
     "ParameterValue": "10.1.12.0/24"
+  },
+  {
+    "ParameterKey": "InstanceTypeStaging",
+    "ParameterValue": "t3.small"
   },
   {
     "ParameterKey": "MinSizeStaging",
@@ -46,5 +54,53 @@
   {
     "ParameterKey": "MaxSizeStaging",
     "ParameterValue": "2"
+  },
+  {
+    "ParameterKey": "VPCCIDRProduction",
+    "ParameterValue": "10.2.0.0/16"
+  },
+  {
+    "ParameterKey": "PublicSubnet1CIDRProduction",
+    "ParameterValue": "10.2.0.0/24"
+  },
+  {
+    "ParameterKey": "PublicSubnet2CIDRProduction",
+    "ParameterValue": "10.2.1.0/24"
+  },
+  {
+    "ParameterKey": "PublicSubnet3CIDRProduction",
+    "ParameterValue": "10.2.2.0/24"
+  },
+  {
+    "ParameterKey": "PrivateSubnet1CIDRProduction",
+    "ParameterValue": "10.2.10.0/24"
+  },
+  {
+    "ParameterKey": "PrivateSubnet2CIDRProduction",
+    "ParameterValue": "10.2.11.0/24"
+  },
+  {
+    "ParameterKey": "PrivateSubnet2CIDRProduction",
+    "ParameterValue": "10.2.11.0/24"
+  },
+  {
+    "ParameterKey": "PrivateSubnet3CIDRProduction",
+    "ParameterValue": "10.2.12.0/24"
+  },
+  {
+    "ParameterKey": "InstanceTypeProduction",
+    "ParameterValue": "t3.medium"
+  },
+  {
+    "ParameterKey": "MinSizeProduction",
+    "ParameterValue": "1"
+  },
+  {
+    "ParameterKey": "DesiredSizeProduction",
+    "ParameterValue": "3"
+  },
+  {
+    "ParameterKey": "MaxSizeProduction",
+    "ParameterValue": "5"
   }
 ]

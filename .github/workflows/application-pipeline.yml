@@ -1,4 +1,4 @@
-name: GitHub Actions Demo
+name: click-count pipeline
 on: [push]
 env:
   APPLICATION_NAME: click-count
@@ -76,3 +76,30 @@ jobs:
         env:
           IMAGE_FULLNAME: ${{ needs.build.outputs.imageName }}
           CLUSTER_NAME: cluster-${{ env.APPLICATION_NAME }}-staging
+
+  deployProduction:
+    needs:
+      - build
+      - deployStaging
+    environment: 'production'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@master
+        with:
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github-oidc-role
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: deploy with Helm
+        run: |
+          aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_REGION
+          curl -sSL https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+          helm version --short
+          helm upgrade -i click-count -n click-count --create-namespace deploy/kube/click-count/ --set imageName=$IMAGE_FULLNAME
+        env:
+          IMAGE_FULLNAME: ${{ needs.build.outputs.imageName }}
+          CLUSTER_NAME: cluster-${{ env.APPLICATION_NAME }}-production
