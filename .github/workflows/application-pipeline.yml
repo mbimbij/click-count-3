@@ -3,7 +3,7 @@ on: [push]
 env:
   APPLICATION_NAME: click-count
   AWS_ACCOUNT_ID: 642009745804
-  AWS_REGION: eu-west-3
+  AWS_REGION: eu-west-1
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 jobs:
