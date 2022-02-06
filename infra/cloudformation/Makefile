@@ -20,11 +20,12 @@ all: s3-bucket github-oidc-trust
 	echo "AWS_REGION $(AWS_REGION)"
 	envsubst < master-stack-parameters.json  > packaged-templates/master-stack-parameters.json
 	aws cloudformation deploy --stack-name $(MASTER_STACK_NAME) --template-file packaged-templates/master-stack.yml --parameter-overrides file://packaged-templates/master-stack-parameters.json --capabilities CAPABILITY_NAMED_IAM
-	$(MAKE) -j2 post-process-eks-cluster-staging post-process-eks-cluster-production
+	$(MAKE) post-process-eks-cluster-staging
+	$(MAKE) post-process-eks-cluster-production
 delete-all:
 	- $(MAKE) -j2 delete-s3-bucket delete-github-oidc-trust
-	$(MAKE) delete-eks-lb-staging
-	$(MAKE) delete-eks-lb-production
+	- $(MAKE) delete-eks-lb-staging
+	- $(MAKE) delete-eks-lb-production
 	stack-deletion/delete-stack-wait-termination.sh $(MASTER_STACK_NAME)
 post-process-eks-cluster-staging:
 	$(MAKE) post-process-eks-cluster ENVIRONMENT=staging
