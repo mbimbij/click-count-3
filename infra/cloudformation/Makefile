@@ -1,15 +1,12 @@
 include infra.env
 
-ifndef APPLICATION_NAME
-$(error APPLICATION_NAME is not set)
-endif
+APPLICATION_NAME=click-count
+AWS_ACCOUNT_ID := $(shell aws sts get-caller-identity --query "Account" --output text)
+MASTER_STACK_NAME=$(APPLICATION_NAME)-master-stack
 
 ifndef AWS_REGION
 AWS_REGION := $(shell aws configure get region)
 endif
-
-AWS_ACCOUNT_ID := $(shell aws sts get-caller-identity --query "Account" --output text)
-MASTER_STACK_NAME=$(APPLICATION_NAME)-master-stack
 
 requires-environment-set:
 	@if [ -z $(ENVIRONMENT) ]; then >&2 echo "ENVIRONMENT is not set"; exit 255; fi
