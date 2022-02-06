@@ -1,11 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: >-
-  AWS CloudFormation Sample Template ElasticBeanstalk_Simple: Configure and
-  launch an AWS Elastic Beanstalk application that connects to an Amazon RDS
-  database instance. Monitoring is setup on the database. **WARNING** This
-  template creates one or more Amazon EC2 instances and an Amazon Relational
-  Database Service database instance. You will be billed for the AWS resources
-  used if you create a stack from this template.
+Description: Staging + Production Environments & OIDC provider for Github Actions pipeline
 Parameters:
   ApplicationName:
     Type: String
@@ -14,6 +8,13 @@ Parameters:
     Type: String
     Description: Kubernetes Version
     Default: '1.21'
+  GithubOrgOrUser:
+    Type: String
+    Description: Github Org or User
+  RepositoryName:
+    Type: String
+    Description: Repository Name
+
   # Staging Parameters
   ## Network Parameters
   VPCCIDRStaging:
@@ -111,12 +112,6 @@ Parameters:
     Type: Number
     Description: "maximum number of nodes in the cluster"
 
-  ## Redis Parameters
-  NumCacheNodesStaging:
-    Default: 1
-    Type: Number
-    Description: Num Cache Nodes
-
 Resources:
   StagingEnvironment:
     Type: "AWS::CloudFormation::Stack"
@@ -135,7 +130,6 @@ Resources:
         MinSize: !Ref MinSizeStaging
         DesiredSize:  !Ref DesiredSizeStaging
         MaxSize: !Ref MaxSizeStaging
-        NumCacheNodes: !Ref NumCacheNodesStaging
       Tags:
         - Key: Name
           Value: !Sub '${ApplicationName}/staging/Network'
@@ -164,3 +158,16 @@ Resources:
           Value: !Sub '${ApplicationName}/production/Network'
         - Key: Environment
           Value: 'production'
+
+  GithubOidcProvider:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      TemplateURL: 'pipeline/github-oidc-provider-trust.yml'
+      Parameters:
+        GithubOrgOrUser: !Ref GithubOrgOrUser
+        RepositoryName: !Ref RepositoryName
+      Tags:
+        - Key: Name
+          Value: !Sub '${ApplicationName}/GithubOidcProvider'
+        - Key: Application
+          Value: !Ref ApplicationName

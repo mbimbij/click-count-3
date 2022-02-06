@@ -8,6 +8,15 @@
     "ParameterValue": "1.21"
   },
   {
+    "ParameterKey": "GithubOrgOrUser",
+    "ParameterValue": "${GITHUB_ORG_OR_USER}"
+  },
+  {
+    "ParameterKey": "RepositoryName",
+    "ParameterValue": "${GITHUB_REPO_NAME}"
+  },
+
+  {
     "ParameterKey": "VPCCIDRStaging",
     "ParameterValue": "10.1.0.0/16"
   },
@@ -54,10 +63,6 @@
   {
     "ParameterKey": "MaxSizeStaging",
     "ParameterValue": "2"
-  },
-  {
-    "ParameterKey": "NumCacheNodesStaging",
-    "ParameterValue": "1"
   },
 
 

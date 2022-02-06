@@ -1,5 +1,8 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: OIDC provider to allow Github Actions pipeline to perform deployments in our EKS clusters
+
 Parameters:
-  GitHubOrg:
+  GithubOrgOrUser:
     Type: String
   RepositoryName:
     Type: String
@@ -18,8 +21,16 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       RoleName: github-oidc-role
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/AdministratorAccess
+      Policies:
+        - PolicyName: 'github-oidc-role-policy'
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action: eks:*
+                Resource: '*'
+              - Effect: Allow
+                Action: ssm:GetParameter
+                Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/click-count/*'
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -31,7 +42,7 @@ Resources:
                 - !Ref OIDCProviderArn
             Condition:
               StringLike:
-                token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOrg}/${RepositoryName}:*
+                token.actions.githubusercontent.com:sub: !Sub repo:${GithubOrgOrUser}/${RepositoryName}:*
 
   GithubOidc:
     Type: AWS::IAM::OIDCProvider

@@ -1,11 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: >-
-  AWS CloudFormation Sample Template ElasticBeanstalk_Simple: Configure and
-  launch an AWS Elastic Beanstalk application that connects to an Amazon RDS
-  database instance. Monitoring is setup on the database. **WARNING** This
-  template creates one or more Amazon EC2 instances and an Amazon Relational
-  Database Service database instance. You will be billed for the AWS resources
-  used if you create a stack from this template.
+Description: Description of an EKS + Elasticache based environment
 Parameters:
   ApplicationName:
     Type: String
@@ -66,12 +60,6 @@ Parameters:
     Type: Number
     Description: "maximum number of nodes in the cluster"
 
-  # Redis parameters
-  NumCacheNodes:
-    Default: 1
-    Type: Number
-    Description: Num Cache Nodes
-
 Resources:
   Network:
     Type: "AWS::CloudFormation::Stack"
@@ -124,7 +112,6 @@ Resources:
         VpcId: !GetAtt Network.Outputs.VPC
         SubnetIds: !GetAtt Network.Outputs.PrivateSubnets
         ApplicationSecurityGroupId: !GetAtt EksCluster.Outputs.ClusterSecurityGroupId
-        NumCacheNodes: !Ref NumCacheNodes
       Tags:
         - Key: Name
           Value: !Sub '${ApplicationName}/${Environment}/Redis'
