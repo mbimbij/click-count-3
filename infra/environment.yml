@@ -102,7 +102,7 @@ Resources:
         - Key: Environment
           Value: !Ref Environment
 
-  Redis:
+  RedisCluster:
     Type: "AWS::CloudFormation::Stack"
     Properties:
       TemplateURL: 'redis-elasticache/redis-elasticache.yml'
@@ -114,4 +114,8 @@ Resources:
         ApplicationSecurityGroupId: !GetAtt EksCluster.Outputs.ClusterSecurityGroupId
       Tags:
         - Key: Name
-          Value: !Sub '${ApplicationName}/${Environment}/Redis'
+          Value: !Sub '${ApplicationName}/${Environment}/RedisCluster'
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Application
+          Value: !Ref ApplicationName
