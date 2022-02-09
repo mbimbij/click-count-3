@@ -1,9 +1,6 @@
 name: click-count pipeline
 on: [push]
 env:
-  APPLICATION_NAME: click-count
-  AWS_ACCOUNT_ID: 642009745804
-  AWS_REGION: eu-west-3
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 jobs:
@@ -53,61 +50,27 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  deployStaging:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@master
-        with:
-          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github-oidc-role
-          aws-region: ${{ env.AWS_REGION }}
-      - name: Get Elasticache-Redis host
-        id: get_redis_host
-        run: echo ::set-output name=redis_host::"$(aws ssm get-parameter --name '/click-count/staging/redis/address' --query 'Parameter.Value' --output text)"
-      - name: Check out repository code
-        uses: actions/checkout@v2
-      - name: deploy with Helm
-        run: |
-          ls
-          ls -al ./.github/workflows/
-          chmod +x ./.github/workflows/deploy-helm.sh
-          ./.github/workflows/deploy-helm.sh
-        env:
-          IMAGE_FULLNAME: ${{ needs.build.outputs.imageName }}
-          CLUSTER_NAME: cluster-${{ env.APPLICATION_NAME }}-staging
-          REDIS_HOST: ${{ steps.get_redis_host.outputs.redis_host }}
-
-  deployProduction:
+  staging:
     needs:
       - build
-      - deployStaging
-    environment: 'production'
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@master
-        with:
-          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github-oidc-role
-          aws-region: ${{ env.AWS_REGION }}
-      - name: Get Elasticache-Redis host
-        id: get_redis_host
-        run: echo ::set-output name=redis_host::"$(aws ssm get-parameter --name '/click-count/production/redis/address' --query 'Parameter.Value' --output text)"
-      - name: Check out repository code
-        uses: actions/checkout@v2
-      - name: Deploy with Helm
-        run: |
-          ls
-          ls -al ./.github/workflows/
-          chmod +x ./.github/workflows/deploy-helm.sh
-          ./.github/workflows/deploy-helm.sh
-        env:
-          IMAGE_FULLNAME: ${{ needs.build.outputs.imageName }}
-          CLUSTER_NAME: cluster-${{ env.APPLICATION_NAME }}-production
-          REDIS_HOST: ${{ steps.get_redis_host.outputs.redis_host }}
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: staging
+      image_fullname: ${{ needs.build.outputs.imageName }}
+    secrets:
+      application_name: ${{ secrets.APPLICATION_NAME }}
+      aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+      aws_region: ${{ secrets.AWS_REGION }}
+
+  production:
+    needs:
+      - build
+      - staging
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: production
+      image_fullname: ${{ needs.build.outputs.imageName }}
+    secrets:
+      application_name: ${{ secrets.APPLICATION_NAME }}
+      aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+      aws_region: ${{ secrets.AWS_REGION }}
