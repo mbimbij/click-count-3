@@ -4,7 +4,27 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      application_or_pipeline: ${{ steps.filter.outputs.application_or_pipeline }}
+      deploy: ${{ steps.filter.outputs.deploy }}
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            application_or_pipeline:
+              - 'src/**'
+              - '.github/**'
+              - 'pom.xml'
+            deploy:
+              - 'deploy/**'
   build:
+    needs: changes
+    if: ${{ needs.changes.outputs.application_or_pipeline == 'true' }}
     runs-on: ubuntu-latest
     outputs:
       imageName: ${{ steps.meta.outputs.tags }}
