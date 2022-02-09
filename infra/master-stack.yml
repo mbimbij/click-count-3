@@ -116,7 +116,7 @@ Resources:
   StagingEnvironment:
     Type: "AWS::CloudFormation::Stack"
     Properties:
-      TemplateURL: 'environment.yml'
+      TemplateURL: 'environment/environment.yml'
       Parameters:
         ApplicationName: !Ref ApplicationName
         Environment: 'staging'
@@ -136,28 +136,28 @@ Resources:
         - Key: Environment
           Value: 'staging'
 
-  ProductionEnvironment:
-    Type: "AWS::CloudFormation::Stack"
-    Properties:
-      TemplateURL: 'environment.yml'
-      Parameters:
-        ApplicationName: !Ref ApplicationName
-        Environment: 'production'
-        VPCCIDR: !Ref VPCCIDRProduction
-        PublicSubnet1CIDR: !Ref PublicSubnet1CIDRProduction
-        PublicSubnet2CIDR: !Ref PublicSubnet2CIDRProduction
-        PublicSubnet3CIDR: !Ref PublicSubnet3CIDRProduction
-        PrivateSubnet1CIDR: !Ref PrivateSubnet1CIDRProduction
-        PrivateSubnet2CIDR: !Ref PrivateSubnet2CIDRProduction
-        PrivateSubnet3CIDR: !Ref PrivateSubnet3CIDRProduction
-        MinSize: !Ref MinSizeProduction
-        DesiredSize:  !Ref DesiredSizeProduction
-        MaxSize: !Ref MaxSizeProduction
-      Tags:
-        - Key: Name
-          Value: !Sub '${ApplicationName}/production/Network'
-        - Key: Environment
-          Value: 'production'
+#  ProductionEnvironment:
+#    Type: "AWS::CloudFormation::Stack"
+#    Properties:
+#      TemplateURL: 'environment/environment.yml'
+#      Parameters:
+#        ApplicationName: !Ref ApplicationName
+#        Environment: 'production'
+#        VPCCIDR: !Ref VPCCIDRProduction
+#        PublicSubnet1CIDR: !Ref PublicSubnet1CIDRProduction
+#        PublicSubnet2CIDR: !Ref PublicSubnet2CIDRProduction
+#        PublicSubnet3CIDR: !Ref PublicSubnet3CIDRProduction
+#        PrivateSubnet1CIDR: !Ref PrivateSubnet1CIDRProduction
+#        PrivateSubnet2CIDR: !Ref PrivateSubnet2CIDRProduction
+#        PrivateSubnet3CIDR: !Ref PrivateSubnet3CIDRProduction
+#        MinSize: !Ref MinSizeProduction
+#        DesiredSize:  !Ref DesiredSizeProduction
+#        MaxSize: !Ref MaxSizeProduction
+#      Tags:
+#        - Key: Name
+#          Value: !Sub '${ApplicationName}/production/Network'
+#        - Key: Environment
+#          Value: 'production'
 
   GithubOidcProvider:
     Type: "AWS::CloudFormation::Stack"
@@ -166,6 +166,7 @@ Resources:
       Parameters:
         GithubOrgOrUser: !Ref GithubOrgOrUser
         RepositoryName: !Ref RepositoryName
+        ApplicationName: !Ref ApplicationName
       Tags:
         - Key: Name
           Value: !Sub '${ApplicationName}/GithubOidcProvider'

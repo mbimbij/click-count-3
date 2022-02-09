@@ -10,6 +10,9 @@ Parameters:
     Description: Arn for the GitHub OIDC Provider.
     Default: ""
     Type: String
+  ApplicationName:
+    Type: String
+    Description: Application Name
 
 Conditions:
   CreateOIDCProvider: !Equals
@@ -30,7 +33,7 @@ Resources:
                 Resource: '*'
               - Effect: Allow
                 Action: ssm:GetParameter
-                Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/click-count/*'
+                Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ApplicationName}/*'
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow

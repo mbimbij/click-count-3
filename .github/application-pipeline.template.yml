@@ -1,9 +1,9 @@
 name: click-count pipeline
 on: [push]
 env:
-  APPLICATION_NAME: click-count
-  AWS_ACCOUNT_ID: 642009745804
-  AWS_REGION: eu-west-3
+  APPLICATION_NAME: ${APPLICATION_NAME}
+  AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID}
+  AWS_REGION: ${AWS_REGION}
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 jobs:
