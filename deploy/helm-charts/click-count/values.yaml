@@ -4,3 +4,4 @@ application:
   redisHost: redis-master.redis
 
 imageName: ghcr.io/mbimbij/click-count:latest
+

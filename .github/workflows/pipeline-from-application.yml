@@ -1,4 +1,4 @@
-name: click-count pipeline
+name: Build & Deploy
 on: [push]
 env:
   REGISTRY: ghcr.io
