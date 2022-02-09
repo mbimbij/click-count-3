@@ -4,7 +4,7 @@ requires-environment-set:
 	@if [ -z $(ENVIRONMENT) ]; then >&2 echo "ENVIRONMENT is not set"; exit 255; fi
 
 MASTER_STACK_NAME=$(APPLICATION_NAME)-master-stack
-all: application-pipeline.yml s3-bucket
+all: github-actions s3-bucket
 	mkdir -p infra/packaged-templates
 	aws cloudformation package --template-file infra/master-stack.yml --output-template infra/packaged-templates/master-stack.yml --s3-bucket $(S3_BUCKET_NAME)
 	echo "AWS_REGION $(AWS_REGION)"
@@ -36,6 +36,14 @@ delete-eks-lb: requires-environment-set
 	aws eks update-kubeconfig --name cluster-$(APPLICATION_NAME)-$(ENVIRONMENT)
 	kubectl -n $(APPLICATION_NAME) delete svc $(APPLICATION_NAME)
 
-application-pipeline.yml::
-	envsubst < .github/application-pipeline.template.yml > .github/workflows/application-pipeline.yml
-	chmod +x .github/workflows/application-pipeline.yml
+github-actions:
+	@if [ -z $(GITHUB_PAT) ]; then >&2 echo "GITHUB_PAT is not set"; exit 255; fi
+	cd infra/pipeline; \
+	pwd; \
+	terraform init; \
+	terraform apply -var='PAT=$(GITHUB_PAT)' \
+					-var='AWS_ACCOUNT_ID=$(AWS_ACCOUNT_ID)' \
+					-var='AWS_REGION=$(AWS_REGION)' \
+					-var='REPOSITORY_NAME=$(REPOSITORY_NAME)' \
+					-var='APPLICATION_NAME=$(APPLICATION_NAME)' \
+					-auto-approve ;

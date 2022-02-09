@@ -13,7 +13,7 @@
   },
   {
     "ParameterKey": "RepositoryName",
-    "ParameterValue": "${GITHUB_REPO_NAME}"
+    "ParameterValue": "${REPOSITORY_NAME}"
   },
 
   {
