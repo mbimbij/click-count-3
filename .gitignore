@@ -2,3 +2,7 @@
 target/
 *.iml
 **/packaged-templates/
+
+**/.terraform/**
+**/terraform.tfstate
+**/terraform.tfstate.backup

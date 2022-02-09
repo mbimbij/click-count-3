@@ -1,0 +1,45 @@
+name: Deploy
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      image_fullname:
+        required: true
+        type: string
+    secrets:
+      application_name:
+        required: true
+      aws_account_id:
+        required: true
+      aws_region:
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@master
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.aws_account_id }}:role/github-oidc-role
+          aws-region: ${{ secrets.aws_region }}
+      - name: Get Elasticache-Redis host
+        id: get_redis_host
+        run: echo ::set-output name=redis_host::"$(aws ssm get-parameter --name '/${{ secrets.application_name }}/${{ inputs.environment }}/redis/address' --query 'Parameter.Value' --output text)"
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: deploy with Helm
+        run: |
+          chmod +x ./.github/workflows/deploy-helm.sh
+          ./.github/workflows/deploy-helm.sh
+        env:
+          IMAGE_FULLNAME: ${{ inputs.image_fullname }}
+          CLUSTER_NAME: cluster-${{ secrets.application_name }}-staging
+          REDIS_HOST: ${{ steps.get_redis_host.outputs.redis_host }}
