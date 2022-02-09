@@ -38,3 +38,4 @@ delete-eks-lb: requires-environment-set
 
 application-pipeline.yml::
 	envsubst < .github/application-pipeline.template.yml > .github/workflows/application-pipeline.yml
+	chmod +x .github/workflows/application-pipeline.yml

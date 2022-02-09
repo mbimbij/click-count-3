@@ -72,7 +72,10 @@ jobs:
         uses: actions/checkout@v2
       - name: deploy with Helm
         run: |
-          .github/workflows/deploy-helm.sh
+          ls
+          ls -al ./.github/workflows/
+          chmod +x ./.github/workflows/deploy-helm.sh
+          ./.github/workflows/deploy-helm.sh
         env:
           IMAGE_FULLNAME: ${{ needs.build.outputs.imageName }}
           CLUSTER_NAME: cluster-${{ env.APPLICATION_NAME }}-staging
@@ -98,9 +101,12 @@ jobs:
         run: echo ::set-output name=redis_host::"$(aws ssm get-parameter --name '/click-count/production/redis/address' --query 'Parameter.Value' --output text)"
       - name: Check out repository code
         uses: actions/checkout@v2
-      - name: deploy with Helm
+      - name: Deploy with Helm
         run: |
-          .github/workflows/deploy-helm.sh
+          ls
+          ls -al ./.github/workflows/
+          chmod +x ./.github/workflows/deploy-helm.sh
+          ./.github/workflows/deploy-helm.sh
         env:
           IMAGE_FULLNAME: ${{ needs.build.outputs.imageName }}
           CLUSTER_NAME: cluster-${{ env.APPLICATION_NAME }}-production
