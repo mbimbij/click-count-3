@@ -1,4 +1,4 @@
-name: Build & Deploy
+name: Application Pipeline
 on: [push]
 env:
   REGISTRY: ghcr.io
@@ -9,6 +9,7 @@ jobs:
     outputs:
       application: ${{ steps.filter.outputs.application }}
       deploy: ${{ steps.filter.outputs.deploy }}
+      imageName: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.latest_docker_tag.outputs.docker_tag }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
@@ -22,6 +23,11 @@ jobs:
               - 'pom.xml'
             deploy:
               - 'deploy/**'
+      - name: Get latest Docker tag
+        id: latest_docker_tag
+        run: |
+          echo ::set-output name=docker_tag::"$(curl -s -H 'Authorization: Token ${{ secrets.GITHUB_TOKEN }}' https://api.github.com/users/mbimbij/packages/container/click-count/versions | jq -r '.[0].metadata.container.tags[0]')"
+
   build:
     needs: changes
     if: ${{ needs.changes.outputs.application == 'true' }}
@@ -70,7 +76,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  staging:
+  build_staging:
     needs:
       - build
     uses: ./.github/workflows/deploy.yml
@@ -82,14 +88,40 @@ jobs:
       aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
       aws_region: ${{ secrets.AWS_REGION }}
 
-  production:
+  build_production:
     needs:
       - build
-      - staging
+      - build_staging
     uses: ./.github/workflows/deploy.yml
     with:
       environment: production
       image_fullname: ${{ needs.build.outputs.imageName }}
+    secrets:
+      application_name: ${{ secrets.APPLICATION_NAME }}
+      aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+      aws_region: ${{ secrets.AWS_REGION }}
+
+  deploy_staging:
+    needs:
+      - changes
+    if: ${{ needs.changes.outputs.deploy == 'true' }}
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: staging
+      image_fullname: ${{ needs.changes.outputs.imageName }}
+    secrets:
+      application_name: ${{ secrets.APPLICATION_NAME }}
+      aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+      aws_region: ${{ secrets.AWS_REGION }}
+
+  deploy_production:
+    needs:
+      - changes
+      - deploy_staging
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: production
+      image_fullname: ${{ needs.changes.outputs.imageName }}
     secrets:
       application_name: ${{ secrets.APPLICATION_NAME }}
       aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
