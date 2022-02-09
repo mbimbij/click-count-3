@@ -41,5 +41,5 @@ jobs:
           ./.github/workflows/deploy-helm.sh
         env:
           IMAGE_FULLNAME: ${{ inputs.image_fullname }}
-          CLUSTER_NAME: cluster-${{ secrets.application_name }}-staging
+          CLUSTER_NAME: cluster-${{ secrets.application_name }}-${{ inputs.environment }}
           REDIS_HOST: ${{ steps.get_redis_host.outputs.redis_host }}

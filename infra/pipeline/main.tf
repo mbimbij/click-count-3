@@ -34,6 +34,11 @@ resource "github_actions_secret" "AWS_REGION" {
   plaintext_value  = var.AWS_REGION
 }
 
+resource "github_repository_environment" "staging" {
+  environment = "staging"
+  repository  = var.REPOSITORY_NAME
+}
+
 resource "github_repository_environment" "production" {
   environment = "production"
   repository  = var.REPOSITORY_NAME
