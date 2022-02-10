@@ -16,6 +16,8 @@ on:
         required: true
       aws_region:
         required: true
+      redis_host:
+        required: true
 
 jobs:
   deploy:
@@ -30,9 +32,6 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::${{ secrets.aws_account_id }}:role/github-oidc-role
           aws-region: ${{ secrets.aws_region }}
-      - name: Get Elasticache-Redis host
-        id: get_redis_host
-        run: echo ::set-output name=redis_host::"$(aws ssm get-parameter --name '/${{ secrets.application_name }}/${{ inputs.environment }}/redis/address' --query 'Parameter.Value' --output text)"
       - name: Check out repository code
         uses: actions/checkout@v2
       - name: deploy with Helm
@@ -42,4 +41,4 @@ jobs:
         env:
           IMAGE_FULLNAME: ${{ inputs.image_fullname }}
           CLUSTER_NAME: cluster-${{ secrets.application_name }}-${{ inputs.environment }}
-          REDIS_HOST: ${{ steps.get_redis_host.outputs.redis_host }}
+          REDIS_HOST: ${{ secrets.redis_host }}

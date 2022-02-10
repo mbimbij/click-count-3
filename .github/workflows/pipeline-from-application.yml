@@ -87,6 +87,7 @@ jobs:
       application_name: ${{ secrets.APPLICATION_NAME }}
       aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
       aws_region: ${{ secrets.AWS_REGION }}
+      redis_host: ${{ secrets.REDIS_HOST }}
 
   build_production:
     needs:
@@ -100,6 +101,7 @@ jobs:
       application_name: ${{ secrets.APPLICATION_NAME }}
       aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
       aws_region: ${{ secrets.AWS_REGION }}
+      redis_host: ${{ secrets.REDIS_HOST }}
 
   deploy_staging:
     needs:
@@ -113,6 +115,7 @@ jobs:
       application_name: ${{ secrets.APPLICATION_NAME }}
       aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
       aws_region: ${{ secrets.AWS_REGION }}
+      redis_host: ${{ secrets.REDIS_HOST }}
 
   deploy_production:
     needs:
@@ -126,3 +129,4 @@ jobs:
       application_name: ${{ secrets.APPLICATION_NAME }}
       aws_account_id: ${{ secrets.AWS_ACCOUNT_ID }}
       aws_region: ${{ secrets.AWS_REGION }}
+      redis_host: ${{ secrets.REDIS_HOST }}
