@@ -32,13 +32,12 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::${{ secrets.aws_account_id }}:role/github-oidc-role
           aws-region: ${{ secrets.aws_region }}
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --name cluster-${{ secrets.application_name }}-${{ inputs.environment }} --region ${{ secrets.aws_region }}
       - name: Check out repository code
         uses: actions/checkout@v2
-      - name: deploy with Helm
-        run: |
-          chmod +x ./.github/workflows/deploy-helm.sh
-          ./.github/workflows/deploy-helm.sh
-        env:
-          IMAGE_FULLNAME: ${{ inputs.image_fullname }}
-          CLUSTER_NAME: cluster-${{ secrets.application_name }}-${{ inputs.environment }}
-          REDIS_HOST: ${{ secrets.redis_host }}
+      - name: Install release
+        uses: hiberbee/github-action-helm@latest
+        with:
+          helm: upgrade -i click-count -n click-count --create-namespace deploy/helm-charts/click-count/ --set imageName=${{ inputs.image_fullname }} --set application.redisHost=${{ secrets.redis_host }}
+
