@@ -162,7 +162,7 @@ Resources:
   GithubOidcProvider:
     Type: "AWS::CloudFormation::Stack"
     Properties:
-      TemplateURL: 'pipeline/github-oidc-provider-trust.yml'
+      TemplateURL: 'pipeline/oidc-provider/github-oidc-provider-trust.yml'
       Parameters:
         GithubOrgOrUser: !Ref GithubOrgOrUser
         RepositoryName: !Ref RepositoryName

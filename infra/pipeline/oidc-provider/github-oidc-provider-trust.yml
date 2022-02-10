@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: OIDC provider to allow Github Actions pipeline to perform deployments in our EKS clusters
+
+Parameters:
+  GithubOrgOrUser:
+    Type: String
+  RepositoryName:
+    Type: String
+  OIDCProviderArn:
+    Description: Arn for the GitHub OIDC Provider.
+    Default: ""
+    Type: String
+  ApplicationName:
+    Type: String
+    Description: Application Name
+
+Conditions:
+  CreateOIDCProvider: !Equals
+    - !Ref OIDCProviderArn
+    - ""
+
+Resources:
+  Role:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: github-oidc-role
+      Policies:
+        - PolicyName: 'github-oidc-role-policy'
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action: eks:*
+                Resource: '*'
+              - Effect: Allow
+                Action: ssm:GetParameter
+                Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ApplicationName}/*'
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRoleWithWebIdentity
+            Principal:
+              Federated: !If
+                - CreateOIDCProvider
+                - !Ref GithubOidc
+                - !Ref OIDCProviderArn
+            Condition:
+              StringLike:
+                token.actions.githubusercontent.com:sub: !Sub repo:${GithubOrgOrUser}/${RepositoryName}:*
+
+  GithubOidc:
+    Type: AWS::IAM::OIDCProvider
+    Condition: CreateOIDCProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList:
+        - sts.amazonaws.com
+      ThumbprintList:
+        - 6938fd4d98bab03faadb97b34396831e3780aea1
+
+Outputs:
+  Role:
+    Value: !GetAtt Role.Arn

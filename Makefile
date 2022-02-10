@@ -4,16 +4,17 @@ requires-environment-set:
 	@if [ -z $(ENVIRONMENT) ]; then >&2 echo "ENVIRONMENT is not set"; exit 255; fi
 
 MASTER_STACK_NAME=$(APPLICATION_NAME)-master-stack
-all: github-actions s3-bucket
+all: s3-bucket
 	mkdir -p infra/packaged-templates
 	aws cloudformation package --template-file infra/master-stack.yml --output-template infra/packaged-templates/master-stack.yml --s3-bucket $(S3_BUCKET_NAME)
 	echo "AWS_REGION $(AWS_REGION)"
 	envsubst < infra/master-stack-parameters.json  > infra/packaged-templates/master-stack-parameters.json
 	aws cloudformation deploy --stack-name $(MASTER_STACK_NAME) --template-file infra/packaged-templates/master-stack.yml --parameter-overrides file://infra/packaged-templates/master-stack-parameters.json --capabilities CAPABILITY_NAMED_IAM
+	$(MAKE) github-actions
 	$(MAKE) post-process-eks-cluster ENVIRONMENT=staging
 	$(MAKE) post-process-eks-cluster ENVIRONMENT=production
 delete-all:
-	- $(MAKE) -j2 delete-s3-bucket
+	- $(MAKE) -j2 delete-s3-bucket delete-github-actions
 	- $(MAKE) delete-eks-lb ENVIRONMENT=staging
 	- $(MAKE) delete-eks-lb ENVIRONMENT=production
 	infra/stack-deletion/delete-stack-wait-termination.sh $(MASTER_STACK_NAME)
@@ -38,7 +39,7 @@ delete-eks-lb: requires-environment-set
 
 github-actions:
 	@if [ -z $(GITHUB_PAT) ]; then >&2 echo "GITHUB_PAT is not set"; exit 255; fi
-	cd infra/pipeline; \
+	cd infra/pipeline/github-actions; \
 	pwd; \
 	terraform init; \
 	terraform apply -var='PAT=$(GITHUB_PAT)' \
@@ -49,7 +50,7 @@ github-actions:
 					-auto-approve ;
 delete-github-actions:
 	@if [ -z $(GITHUB_PAT) ]; then >&2 echo "GITHUB_PAT is not set"; exit 255; fi
-	cd infra/pipeline; \
+	cd infra/pipeline/github-actions; \
 	pwd; \
 	terraform init; \
 	terraform destroy -var='PAT=$(GITHUB_PAT)' \
