@@ -1,10 +1,14 @@
 include props.env
+include secrets.env
 
 requires-environment-set:
 	@if [ -z $(ENVIRONMENT) ]; then >&2 echo "ENVIRONMENT is not set"; exit 255; fi
 
+ignore-secrets:
+	git update-index --skip-worktree secrets.env
+
 MASTER_STACK_NAME=$(APPLICATION_NAME)-master-stack
-all: s3-bucket
+all: ignore-secrets s3-bucket
 	mkdir -p infra/packaged-templates
 	aws cloudformation package --template-file infra/master-stack.yml --output-template infra/packaged-templates/master-stack.yml --s3-bucket $(S3_BUCKET_NAME)
 	echo "AWS_REGION $(AWS_REGION)"
@@ -38,7 +42,7 @@ delete-eks-lb: requires-environment-set
 	kubectl -n $(APPLICATION_NAME) delete svc $(APPLICATION_NAME)
 
 github-actions:
-	@if [ -z $(GITHUB_PAT) ]; then >&2 echo "GITHUB_PAT is not set"; exit 255; fi
+	@if [ -z $(GITHUB_PAT) ]; then >&2 echo "GITHUB_PAT is not set.\n  1. Create a token in github.com (cf README) \n  2. Edit 'secrets.env' file\n  3. run the target 'ignore-secrets'"; exit 255; fi
 	cd infra/pipeline/github-actions; \
 	pwd; \
 	terraform init; \

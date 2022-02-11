@@ -2,6 +2,7 @@
 target/
 *.iml
 **/packaged-templates/
+secrets.env
 
 **/.terraform/**
 **/terraform.tfstate

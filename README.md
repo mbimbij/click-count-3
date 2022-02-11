@@ -60,6 +60,17 @@ Pour pouvoir déployer l'infra, il faut:
 
 ![](docs/1.1-schema.png)
 
+6. Editer le fichier `secrets.env` et ajoutez-y le token Github
+
+![](docs/1.12-schema.png)
+
+7. éxécuter la target `ignore-secrets` pour que git ne prenne pas en compte les modifications sur ce fichier
+
+```shell
+>> make ignore-secrets 
+git update-index --skip-worktree secrets.env
+```
+
 # Installation
 
 1. Forker le repo
@@ -67,13 +78,22 @@ Pour pouvoir déployer l'infra, il faut:
 
 ![](docs/1-schema.png)
 
-3. Installez l'infra et les paramètres de la pipeline avec le token d'accès Github en variable d'environnement (cf section [Préliminaires](#Préliminaires)) 
+3. Installez l'infra et les paramètres de la pipeline avec le token d'accès Github dans `secrets.env` (cf section [Préliminaires](#Préliminaires)) 
 
-![](docs/1.2-schema.png)
+```shell
+>> make all
+git update-index --skip-worktree secrets.env
+aws cloudformation deploy    \
+          --stack-name click-count-642009745804-eu-west-3-bucket   \
+          --template-file infra/s3-bucket/s3-bucket.yml   \
+          --parameter-overrides     \
+            BucketName=click-count-642009745804-eu-west-3-bucket
+[...]
+```
 
-(Le token a été changé pour le screenshot)
-
-Le token d'accès n'est pas rajouté à `props.env` afin de ne pas le commiter par erreur. De plus quand Github détecte un token d'accès dans le code source, il l'invalide automatiquement.
+Le token d'accès n'est pas rajouté à `props.env` afin de ne pas le commiter par erreur.
+Il est rajouté au fichier secrets.env, dont les modifications sont ignorées
+De plus quand Github détecte un token d'accès dans le code source, il l'invalide automatiquement.
 
 4. Les environnements et secrets dans Github Actions devraient être créés
 
