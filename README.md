@@ -21,7 +21,7 @@ Sommaire
 
 ## Présentation Générale
 
-Implémentation de l'exerice avec :
+Implémentation de l'exercice avec :
 
 1. des environnements basés sur des clusters EKS et Elasticache Redis, 
 2. une pipeline utilisant Github Actions et Helm
