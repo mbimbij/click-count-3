@@ -2,7 +2,22 @@
 
 [![Build Status](https://travis-ci.org/xebia-france/click-count.svg)](https://travis-ci.org/xebia-france/click-count)
 
-# Introduction
+Sommaire
+=================
+
+<!--ts-->
+
+- [Introduction, Description du travail effectué](#introduction)
+   * [Présentation Générale](#présentation-générale)
+   * [Description du contenu du repository](#description-du-contenu-du-repository)
+- [Préliminaires](#préliminaires)
+- [Installation](#installation)
+- [Suppression](#suppression)
+- [Notes & Remarques](#notes--remarques)
+
+---
+
+# Introduction, Description du travail effectué
 
 ## Présentation Générale
 
