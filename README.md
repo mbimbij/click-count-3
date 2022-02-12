@@ -174,13 +174,22 @@ make delete-all
 [ERROR] strategy = org.codehaus.plexus.classworlds.strategy.SelfFirstStrategy
 ```
 
-2. Implémenter des déploiement "safe": rajouter des tests automatisés après le déploiement avec rollback automatique et canary / déploiement progressif (Flagger semble être l'outil de choix pour cela)
-3. On peut vouloir préférer un modèle "pull" pour le déploiement dans Kube, ne serait-ce que pour éviter à donner accès aux clusters depuis l'extérieur et utiliser un outil tel que par exemple FluxCD, ArgoCD ou autre. Mais il n'est pas toujours facile de suivre le déploiement
-4. Pour des applis et projets simples, on pourrait vouloir se tourner vers une solution totalement managée, type heroku, Google App Engine, AWS App Runner (avec des réserves pour ce dernier).
-5. L'infra existant a priori de manière indépendante de l'app (et pouvant être utilisée par plusieurs apps), on pourrait vouloir la mettre dans son propre repository. Cependant, les charts Helm devraient rester avec le code de l'app
-6. L'infra est déployée depuis le laptop. Il serait plus approprié de définir une pipeline pour la mise à jour de celle-ci
-7. Je n'ai pas été complètement emballé par Github Actions, au moins il a le mérite d'être managé.
-8. Pour le cluster Redis: plutôt un service managé ou bien dans le cluster Kube ?
-9. Des ressources non-managées par `CloudFormation` sont créées par EKS et causent des soucis pour clean l'infra, forçant à introduire des scripts (ou des lambdas éventuellement) pour les cleaner.
-10. On peut avoir des arguments contre une "master-stack" de toute l'infra. C'est pratique de pouvoir créer toute l'infra, sans scotch, via un seul `aws cloudformation deploy` et la supprimer via une seul `aws cloudformation delete-stack`, mais ça se discute  
-11. Sur certains aspects, notamment les tests ou encore la documentation de l'éxécution en locale
+2. Implémenter des déploiement "safe"
+   1. rajouter des tests automatisés après le déploiement avec rollback automatique et canary / déploiement progressif (Flagger semble être l'outil de choix pour cela)
+3. GitOps / déploiement "pull" 
+   1. On peut vouloir préférer un modèle "pull" pour le déploiement dans Kube, ne serait-ce que pour éviter à donner accès aux clusters depuis l'extérieur et utiliser un outil tel que par exemple FluxCD, ArgoCD ou autre. Mais il n'est pas toujours facile de suivre le déploiement
+4. Déployer dans un PaaS 
+   1. Pour des applis et projets simples, on pourrait vouloir se tourner vers une solution totalement managée, type heroku, Google App Engine, AWS App Runner (avec des réserves pour ce dernier).
+5. Séparer le code d'infra (création des environnements) 
+   1. L'infra existant a priori de manière indépendante de l'app (et pouvant être utilisée par plusieurs apps), on pourrait vouloir la mettre dans son propre repository. Cependant, les charts Helm devraient rester avec le code de l'app
+6. Une pipeline pour l'infra 
+   1. L'infra est déployée depuis le laptop. Il serait plus approprié de définir une pipeline pour la mise à jour de celle-ci
+7. Github Actions pas toujours convaincant
+8. Redis managé ou bien dans Kube ?
+9. Clean des ressources non-managées par l'IaC 
+   1. Des ressources non-managées par `CloudFormation` sont créées par EKS et causent des soucis pour clean l'infra, forçant à introduire des scripts (ou des lambdas éventuellement) pour les cleaner.
+10. Organisation du code d'infra 
+    1. On peut avoir des arguments contre une "master-stack" de toute l'infra. C'est pratique de pouvoir créer toute l'infra, sans scotch, via un seul `aws cloudformation deploy` et la supprimer via une seul `aws cloudformation delete-stack`, mais ça se discute
+    2. Après dans la vraie vie le code d'infra pourrait aussi être géré par plusieurs équipes différentes, ce qui justifierait qu'il soit dans plusieurs repositories
+11. Le résultat produit l'an dernier est meilleur sur certains aspects 
+    1. notamment les tests ou encore la documentation de l'éxécution en locale
