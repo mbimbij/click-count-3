@@ -46,20 +46,20 @@ github-actions:
 	cd infra/pipeline/github-actions; \
 	pwd; \
 	terraform init; \
-	terraform apply -var='PAT=$(GITHUB_PAT)' \
-					-var='AWS_ACCOUNT_ID=$(AWS_ACCOUNT_ID)' \
-					-var='AWS_REGION=$(AWS_REGION)' \
-					-var='REPOSITORY_NAME=$(REPOSITORY_NAME)' \
-					-var='APPLICATION_NAME=$(APPLICATION_NAME)' \
+	terraform apply -var="PAT=$(GITHUB_PAT)" \
+					-var="AWS_ACCOUNT_ID=$(AWS_ACCOUNT_ID)" \
+					-var="AWS_REGION=$(AWS_REGION)" \
+					-var="REPOSITORY_NAME=$(REPOSITORY_NAME)" \
+					-var="APPLICATION_NAME=$(APPLICATION_NAME)" \
 					-auto-approve ;
 delete-github-actions:
 	@if [ -z $(GITHUB_PAT) ]; then >&2 echo "GITHUB_PAT is not set"; exit 255; fi
 	cd infra/pipeline/github-actions; \
 	pwd; \
 	terraform init; \
-	terraform destroy -var='PAT=$(GITHUB_PAT)' \
-					-var='AWS_ACCOUNT_ID=$(AWS_ACCOUNT_ID)' \
-					-var='AWS_REGION=$(AWS_REGION)' \
-					-var='REPOSITORY_NAME=$(REPOSITORY_NAME)' \
-					-var='APPLICATION_NAME=$(APPLICATION_NAME)' \
+	terraform destroy -var="PAT=$(GITHUB_PAT)" \
+					-var="AWS_ACCOUNT_ID=$(AWS_ACCOUNT_ID)" \
+					-var="AWS_REGION=$(AWS_REGION)" \
+					-var="REPOSITORY_NAME=$(REPOSITORY_NAME)" \
+					-var="APPLICATION_NAME=$(APPLICATION_NAME)" \
 					-auto-approve ;
