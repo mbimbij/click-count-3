@@ -1,5 +1,8 @@
 name: Application Pipeline
-on: [push]
+on:
+  - push
+  - workflow_dispatch
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
